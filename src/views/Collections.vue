@@ -1,33 +1,38 @@
 <template>
-    <article class="collections">
-        <h2>Collections: {{$route.params.db}}</h2>
-        <section>
-            <ul class="col-list">
-                <li class="col-item" v-for="col in collections" :key="col">
-                    <div class="name">
-                        <router-link :to="'/' + $route.params.db + '/' + col">{{ col }}</router-link>
-                    </div>
-                </li>
-            </ul>
-        </section>
+    <article class="collections" :key="db">
+        <Cols 
+            :key="db" 
+            :db="db" 
+            :collection="collection"
+            :collections="getCollections(db)">
+            <template :v-if="collection" :slot="db + collection">
+                <Terminal :db="db" :collection="collection"/>
+            </template>
+        </Cols>
     </article>
 </template>
 
 <script lang="ts">
     import Vue from 'vue'
     import Component from 'vue-class-component';
-    import { State, Action, namespace } from 'vuex-class';
-    import { DBList } from '@/store/modules/databases';
+    import { State, Action, Getter, namespace } from 'vuex-class';
+    import Cols from '@/components/Collections.vue';
+    import { IDBCol, DBCollectionsRequest, DBCollections } from '@/dto/DBCollections';
+    import { Prop } from 'vue-property-decorator';
+    import Terminal from './Terminal.vue'
 
     const collections = namespace('collections');
 
-    @Component
-    export default class Dashboard extends Vue {
-        @collections.State('list') collections!: DBList;
+    @Component({
+        components: { Cols, Terminal }
+    })
+    export default class Collections extends Vue {
+        @Prop() db!: string;
+        @Prop() collection!: string;
+        @collections.Getter('collections') getCollections!: (db: string) => IDBCol[];
         @collections.Action('refresh') refresh!: (db: string) => void;
-
         mounted() {
-            this.refresh(this.$route.params.db);
+            this.refresh(this.db);
         }
     }
 </script>

@@ -1,20 +1,19 @@
 import Vue from "vue";
 import Router from "vue-router";
+import Dashboard from "@/views/Dashboard.vue"
+import Collections from "@/views/Collections.vue"
+import Terminal from "@/views/Terminal.vue"
 
 Vue.use(Router);
 
 export default new Router({
   routes: [{
-    path: "/",
+    path: "/:db?/:collection?",
     name: "dashboard",
-    component: () => import(/* webpackChunkName: "about" */ "./views/Dashboard.vue")
-  }, {
-    path: "/:db",
-    name: "collections",
-    component: () => import(/* webpackChunkName: "about" */ "./views/Collections.vue")
-  }, {
-    path: "/:db/:collection",
-    name: "terminal",
-    component: () => import(/* webpackChunkName: "about" */ "./views/Terminal.vue")
+    component: Dashboard,
+    props: (route) => {
+      console.log(route.params);
+      return ({ db: route.params.db, collection: route.params.collection });
+    }
   }]
 });

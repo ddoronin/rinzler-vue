@@ -3,7 +3,7 @@ import { Module } from 'vuex';
 import { IDB, DataBaseListRequest, DataBaseList } from '../../dto/DataBaseList';
 import { Response } from '../../dto/Response';
 import { api } from '@/api/data';
-import { first } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 
 export type DBList = IDB[];
 export type DBState = {list: DBList};
@@ -16,10 +16,11 @@ export const databases: Module<{list: DBList}, RootState> = {
     },
     actions: {
         refresh(context) {
+            if (context.state.list && context.state.list.length > 0) return;
             const req = new DataBaseListRequest();
             api.next(req.write());
             api
-                .pipe(first(({data}) => Response.read(data).id === req.id))
+                .pipe(filter(({data}) => Response.read(data).id === req.id))
                 .subscribe(({data}) => context.commit('refresh', DataBaseList.read(data).list));
         }
     },

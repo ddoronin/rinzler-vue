@@ -1,31 +1,29 @@
 <template>
-    <article class="dashboard">
-        <h2>Dashboard</h2>
-        <section>
-            <p>List of databases.</p>
-            <ul class="db-list">
-                <li class="db-item" v-for="db in dblist" :key="db.name">
-                    <div class="name">
-                        <router-link :to="'/' + db.name">{{ db.name }}</router-link>
-                    </div>
-                    <div class="size">{{ db.sizeOnDisk }}</div>
-                </li>
-            </ul>
-        </section>
-    </article>
+    <DBList :list="dblist" :active="db">
+        <template :v-if="db" :slot="db">
+            <Collections :db="db" :collection="collection"/>
+        </template>
+    </DBList>
 </template>
 
 <script lang="ts">
-    import Vue from 'vue'
+    import Vue from 'vue';
     import Component from 'vue-class-component';
     import { State, Action, namespace } from 'vuex-class';
-    import { DBList } from '@/store/modules/databases';
+    import { Prop } from 'vue-property-decorator';
+    import { IDB } from '@/dto/DataBaseList';
+    import DBList from '@/components/DBList.vue';
+    import Collections from './Collections.vue';
 
     const databases = namespace('databases');
 
-    @Component
+    @Component({
+        components: {DBList, Collections}
+    })
     export default class Dashboard extends Vue {
-        @databases.State('list') dblist!: DBList;
+        @Prop() db!: string;
+        @Prop() collection!: string;
+        @databases.State('list') dblist!: IDB[];
         @databases.Action('refresh') refresh!: () => void;
 
         mounted() {

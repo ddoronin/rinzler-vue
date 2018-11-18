@@ -17,8 +17,7 @@ export class DBCollectionsRequest implements IRequest {
     public write = () => Codec.create(DBCollectionsRequest).write(this);
 }
 
-export interface IDBCol {
-}
+export type IDBCol = string;
 
 @proto
 export class DBCollections {

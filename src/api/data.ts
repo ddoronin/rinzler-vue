@@ -1,5 +1,3 @@
-import Rx from 'rxjs';
-//import filter from 'rxjs/operators/filter';
 import { webSocket } from 'rxjs/websocket';
 
 const subject = webSocket({
@@ -8,7 +6,5 @@ const subject = webSocket({
     serializer: m => m as any,
     deserializer: (e: MessageEvent) => e as any
 });
-
-//subject.pipe(filter())
 
 export const api = subject;
